@@ -1,10 +1,7 @@
 package com.informationalsystems.bookingsystem.data;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -31,6 +28,7 @@ public class RestaurantTable {
     @Column(name = "description")
     private String description;
 
+    @EqualsAndHashCode.Exclude
     @ManyToOne
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;

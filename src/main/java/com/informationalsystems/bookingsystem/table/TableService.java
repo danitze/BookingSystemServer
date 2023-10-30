@@ -27,8 +27,9 @@ public class TableService {
                 .seats(dto.getSeats())
                 .position(dto.getPosition())
                 .description(dto.getDescription())
-                .restaurant(restaurant)
                 .build();
+        table.setRestaurant(restaurant);
+        restaurant.getTables().add(table);
         tableRepository.save(table);
         return "Saved successfully";
     }

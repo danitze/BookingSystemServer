@@ -1,10 +1,7 @@
 package com.informationalsystems.bookingsystem.data;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.*;
 
@@ -28,25 +25,25 @@ public class Restaurant {
 
     @Temporal(TemporalType.TIME)
     @ElementCollection
-    private List<String> startTimes = new ArrayList<>();
-
+    private List<Date> startTimes = new ArrayList<>();
 
     @Temporal(TemporalType.TIME)
     @ElementCollection
-    private List<String> endTimes = new ArrayList<>();
+    private List<Date> endTimes = new ArrayList<>();
 
+    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
     private Set<Dish> dishes = new HashSet<>();
 
+    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
     private Set<RestaurantTable> tables = new HashSet<>();
 
+    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
     private Set<Reservation> reservations = new HashSet<>();
 
-    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
-    private Set<MenuItem> menu = new HashSet<>();
-
+    @EqualsAndHashCode.Exclude
     @OneToOne
     private User userEntity;
 

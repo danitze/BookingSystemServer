@@ -1,9 +1,7 @@
 package com.informationalsystems.bookingsystem.data;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -11,6 +9,7 @@ import java.util.Set;
 @Entity
 @Table(name = "dish")
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Dish {
@@ -23,12 +22,14 @@ public class Dish {
     private String name;
 
     @Column(name = "price")
-    private Double price;
+    private Long price;
 
+    @EqualsAndHashCode.Exclude
     @ManyToOne
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
 
+    @EqualsAndHashCode.Exclude
     @ManyToMany
     private Set<Reservation> reservations = new HashSet<>();
 
