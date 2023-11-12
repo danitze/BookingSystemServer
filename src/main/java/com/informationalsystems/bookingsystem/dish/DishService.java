@@ -20,7 +20,7 @@ public class DishService {
     private final UserRepository userRepository;
 
     @Transactional
-    public String addDish(Principal principal, DishRegisterDto dto) {
+    public SavedDishDto addDish(Principal principal, DishDto dto) {
         Restaurant restaurant = userRepository.findByPhoneNumber(principal.getName())
                 .map(User::getRestaurant)
                 .orElseThrow();
@@ -31,7 +31,7 @@ public class DishService {
         restaurant.getDishes().add(dish);
         dish.setRestaurant(restaurant);
         dishRepository.save(dish);
-        return "Dish saved successfully";
+        return Dish.toSavedDishDto(dish);
     }
 
 }

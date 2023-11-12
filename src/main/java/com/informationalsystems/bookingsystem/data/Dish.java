@@ -1,5 +1,6 @@
 package com.informationalsystems.bookingsystem.data;
 
+import com.informationalsystems.bookingsystem.dish.SavedDishDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -32,5 +33,13 @@ public class Dish {
     @EqualsAndHashCode.Exclude
     @ManyToMany
     private Set<Reservation> reservations = new HashSet<>();
+
+    public static SavedDishDto toSavedDishDto(Dish dish) {
+        return SavedDishDto.builder()
+                .id(dish.getId())
+                .name(dish.getName())
+                .price(dish.getPrice())
+                .build();
+    }
 
 }

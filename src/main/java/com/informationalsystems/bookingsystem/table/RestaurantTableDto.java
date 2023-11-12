@@ -7,8 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @Getter
 @Setter
-public class RegisterTableDto {
-
+public class RestaurantTableDto {
     @NonNull
     private Integer seats;
 

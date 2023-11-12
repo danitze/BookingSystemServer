@@ -1,4 +1,4 @@
-package com.informationalsystems.bookingsystem.dish;
+package com.informationalsystems.bookingsystem.reservation;
 
 import com.informationalsystems.bookingsystem.util.AuthenticationUtil;
 import lombok.RequiredArgsConstructor;
@@ -13,22 +13,22 @@ import org.springframework.web.bind.annotation.RestController;
 import java.security.Principal;
 
 @RestController
-@RequestMapping("/api/v1/dish")
+@RequestMapping("/api/v1/reservation")
 @RequiredArgsConstructor
-public class DishController {
+public class ReservationController {
 
-    private final DishService service;
+    private final ReservationService service;
 
     @PostMapping
-    public ResponseEntity<?> addDish(
-            Authentication authentication,
+    public ResponseEntity<?> create(
             Principal principal,
-            @RequestBody DishDto dto
+            Authentication authentication,
+            @RequestBody ReservationDto dto
     ) {
-        if (!AuthenticationUtil.isRestaurant(authentication)) {
-            throw new AccessDeniedException("Need to be restaurant");
+        if (!AuthenticationUtil.isCustomer(authentication)) {
+            throw new AccessDeniedException("Need to be customer");
         }
-        return ResponseEntity.ok(service.addDish(principal, dto));
+        return ResponseEntity.ok(service.create(principal, dto));
     }
 
 }

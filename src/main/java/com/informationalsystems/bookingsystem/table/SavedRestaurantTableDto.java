@@ -1,20 +1,19 @@
-package com.informationalsystems.bookingsystem.restaurant;
+package com.informationalsystems.bookingsystem.table;
 
 import com.informationalsystems.bookingsystem.data.RestaurantTablePosition;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NonNull;
 
 @Data
 @Builder
 @AllArgsConstructor
-public class RestaurantTableDto {
+public class SavedRestaurantTableDto {
 
-    @NonNull
+    private Long id;
+
     private Integer seats;
 
-    @NonNull
     private RestaurantTablePosition position;
 
     private String description;

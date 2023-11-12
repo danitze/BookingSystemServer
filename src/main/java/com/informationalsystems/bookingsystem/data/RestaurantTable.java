@@ -1,5 +1,6 @@
 package com.informationalsystems.bookingsystem.data;
 
+import com.informationalsystems.bookingsystem.table.SavedRestaurantTableDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -33,6 +34,16 @@ public class RestaurantTable {
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
 
+    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "table", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Reservation> reservations = new HashSet<>();
+
+    public static SavedRestaurantTableDto toSavedRestaurantTableDto(RestaurantTable table) {
+        return SavedRestaurantTableDto.builder()
+                .id(table.getId())
+                .seats(table.getSeats())
+                .position(table.getPosition())
+                .description(table.getDescription())
+                .build();
+    }
 }

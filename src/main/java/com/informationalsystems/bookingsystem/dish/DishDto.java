@@ -6,7 +6,7 @@ import lombok.NonNull;
 
 @Data
 @AllArgsConstructor
-public class DishRegisterDto {
+public class DishDto {
 
     @NonNull
     private String name;

@@ -1,5 +1,6 @@
 package com.informationalsystems.bookingsystem.data;
 
+import com.informationalsystems.bookingsystem.restaurant.SavedRestaurantDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -46,5 +47,16 @@ public class Restaurant {
     @EqualsAndHashCode.Exclude
     @OneToOne
     private User userEntity;
+
+    public static SavedRestaurantDto toSavedRestaurantDto(Restaurant restaurant) {
+        return SavedRestaurantDto.builder()
+                .id(restaurant.getId())
+                .phoneNumber(restaurant.getUserEntity().getPhoneNumber())
+                .name(restaurant.getName())
+                .address(restaurant.getAddress())
+                .startTimes(restaurant.getStartTimes())
+                .endTimes(restaurant.getEndTimes())
+                .build();
+    }
 
 }

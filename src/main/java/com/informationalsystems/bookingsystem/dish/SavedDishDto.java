@@ -1,19 +1,18 @@
-package com.informationalsystems.bookingsystem.restaurant;
+package com.informationalsystems.bookingsystem.dish;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NonNull;
 
 @Data
 @Builder
 @AllArgsConstructor
-public class RestaurantDishDto {
+public class SavedDishDto {
 
-    @NonNull
+    private Long id;
+
     private String name;
 
-    @NonNull
     private Long price;
 
 }

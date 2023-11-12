@@ -18,7 +18,7 @@ public class TableService {
 
     private final TableRepository tableRepository;
 
-    public String addTable(Principal principal, RegisterTableDto dto) {
+    public SavedRestaurantTableDto addTable(Principal principal, RestaurantTableDto dto) {
         Restaurant restaurant = userRepository
                 .findByPhoneNumber(principal.getName())
                 .map(User::getRestaurant)
@@ -31,7 +31,7 @@ public class TableService {
         table.setRestaurant(restaurant);
         restaurant.getTables().add(table);
         tableRepository.save(table);
-        return "Saved successfully";
+        return RestaurantTable.toSavedRestaurantTableDto(table);
     }
 
 }

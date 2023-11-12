@@ -21,10 +21,10 @@ public class TableController {
     private final TableService service;
 
     @PostMapping("/add")
-    public ResponseEntity<String> addTable(
+    public ResponseEntity<?> addTable(
             Principal principal,
             Authentication authentication,
-            @RequestBody RegisterTableDto dto
+            @RequestBody RestaurantTableDto dto
     ) {
         if (!AuthenticationUtil.isRestaurant(authentication)) {
             throw new AccessDeniedException("Need to be restaurant");

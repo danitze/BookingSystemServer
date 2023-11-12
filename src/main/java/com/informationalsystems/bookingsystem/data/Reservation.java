@@ -1,9 +1,8 @@
 package com.informationalsystems.bookingsystem.data;
 
+import com.informationalsystems.bookingsystem.reservation.SavedReservationDto;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -12,6 +11,7 @@ import java.util.Set;
 @Entity
 @Table(name = "reservation")
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Reservation {
@@ -21,32 +21,45 @@ public class Reservation {
     private Long id;
 
     @Temporal(TemporalType.DATE)
-    @Column(name = "date")
-    private Date date;
-
-    @Temporal(TemporalType.TIME)
     @Column(name = "start_time")
     private Date startTime;
 
-    @Temporal(TemporalType.TIME)
+    @Temporal(TemporalType.DATE)
     @Column(name = "end_time")
     private Date endTime;
 
     @Column(name = "customers_amount")
     private Integer customersAmount;
 
+    @EqualsAndHashCode.Exclude
     @ManyToOne
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
+    @EqualsAndHashCode.Exclude
     @ManyToOne
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
 
+    @EqualsAndHashCode.Exclude
     @ManyToOne
     @JoinColumn(name = "table_id")
     private RestaurantTable table;
 
-    @ManyToMany
+    @EqualsAndHashCode.Exclude
+    @ManyToMany(cascade = CascadeType.ALL)
     private Set<Dish> dishes = new HashSet<>();
+
+    public static SavedReservationDto toSavedReservationDto(Reservation reservation) {
+        return SavedReservationDto.builder()
+                .id(reservation.getId())
+                .startTime(reservation.getStartTime())
+                .endTime(reservation.getEndTime())
+                .customersAmount(reservation.getCustomersAmount())
+                .customer(Customer.toSavedCustomerDto(reservation.getCustomer()))
+                .restaurant(Restaurant.toSavedRestaurantDto(reservation.getRestaurant()))
+                .table(RestaurantTable.toSavedRestaurantTableDto(reservation.getTable()))
+                .dishes(reservation.getDishes().stream().map(Dish::toSavedDishDto).toList())
+                .build();
+    }
 }
