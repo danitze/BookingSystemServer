@@ -47,4 +47,12 @@ public class ReservationService {
         return Reservation.toSavedReservationDto(reservation);
     }
 
+    public List<SavedReservationDto> getAll(Principal principal) {
+        User user = userRepository.findByPhoneNumber(principal.getName()).orElseThrow();
+        return switch (user.getRole()) {
+            case CUSTOMER -> user.getCustomer().getReservations().stream().map(Reservation::toSavedReservationDto).toList();
+            case RESTAURANT -> user.getRestaurant().getReservations().stream().map(Reservation::toSavedReservationDto).toList();
+        };
+    }
+
 }

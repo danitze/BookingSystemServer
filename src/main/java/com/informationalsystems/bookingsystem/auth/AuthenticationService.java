@@ -15,6 +15,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
+
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
@@ -80,5 +82,9 @@ public class AuthenticationService {
                 .orElseThrow();
         String jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder().token(jwtToken).build();
+    }
+
+    public SavedUserDto read(Principal principal) {
+        return userRepository.findByPhoneNumber(principal.getName()).map(User::toSavedUserDto).orElseThrow();
     }
 }

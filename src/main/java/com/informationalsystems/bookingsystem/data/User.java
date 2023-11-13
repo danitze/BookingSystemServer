@@ -1,5 +1,6 @@
 package com.informationalsystems.bookingsystem.data;
 
+import com.informationalsystems.bookingsystem.auth.SavedUserDto;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -8,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Table(name = "\"user\"")
@@ -72,5 +74,14 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public static SavedUserDto toSavedUserDto(User user) {
+        return SavedUserDto.builder()
+                .id(user.getId())
+                .role(user.getRole())
+                .customer(Optional.ofNullable(user.getCustomer()).map(Customer::toSavedCustomerDto).orElse(null))
+                .restaurant(Optional.ofNullable(user.getRestaurant()).map(Restaurant::toSavedRestaurantDto).orElse(null))
+                .build();
     }
 }

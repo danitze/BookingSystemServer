@@ -5,10 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
@@ -20,7 +17,7 @@ public class DishController {
     private final DishService service;
 
     @PostMapping
-    public ResponseEntity<?> addDish(
+    public ResponseEntity<?> create(
             Authentication authentication,
             Principal principal,
             @RequestBody DishDto dto
@@ -28,7 +25,7 @@ public class DishController {
         if (!AuthenticationUtil.isRestaurant(authentication)) {
             throw new AccessDeniedException("Need to be restaurant");
         }
-        return ResponseEntity.ok(service.addDish(principal, dto));
+        return ResponseEntity.ok(service.create(principal, dto));
     }
 
 }

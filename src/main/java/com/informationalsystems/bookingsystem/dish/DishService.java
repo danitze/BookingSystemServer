@@ -20,7 +20,7 @@ public class DishService {
     private final UserRepository userRepository;
 
     @Transactional
-    public SavedDishDto addDish(Principal principal, DishDto dto) {
+    public SavedDishDto create(Principal principal, DishDto dto) {
         Restaurant restaurant = userRepository.findByPhoneNumber(principal.getName())
                 .map(User::getRestaurant)
                 .orElseThrow();
