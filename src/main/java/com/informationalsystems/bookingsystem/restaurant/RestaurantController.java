@@ -2,13 +2,14 @@ package com.informationalsystems.bookingsystem.restaurant;
 
 import com.informationalsystems.bookingsystem.dish.SavedDishDto;
 import com.informationalsystems.bookingsystem.table.SavedRestaurantTableDto;
+import com.informationalsystems.bookingsystem.util.AuthenticationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -17,6 +18,18 @@ import java.util.List;
 public class RestaurantController {
 
     private final RestaurantService service;
+
+    @PutMapping
+    public ResponseEntity<?> update(
+            Authentication authentication,
+            Principal principal,
+            @RequestBody RestaurantDto dto
+    ) {
+        if (!AuthenticationUtil.isRestaurant(authentication)) {
+            throw new AccessDeniedException("Need to be restaurant");
+        }
+        return ResponseEntity.ok(service.update(principal, dto));
+    }
 
     @GetMapping("/tables")
     public ResponseEntity<List<SavedRestaurantTableDto>> getTables(

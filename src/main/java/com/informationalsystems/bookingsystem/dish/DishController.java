@@ -28,4 +28,29 @@ public class DishController {
         return ResponseEntity.ok(service.create(principal, dto));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(
+            Authentication authentication,
+            Principal principal,
+            @PathVariable("id") Long id,
+            @RequestBody DishDto dto
+    ) {
+        if (!AuthenticationUtil.isRestaurant(authentication)) {
+            throw new AccessDeniedException("Need to be restaurant");
+        }
+        return ResponseEntity.ok(service.update(principal, id, dto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(
+            Authentication authentication,
+            Principal principal,
+            @PathVariable("id") Long id
+    ) {
+        if (!AuthenticationUtil.isRestaurant(authentication)) {
+            throw new AccessDeniedException("Need to be restaurant");
+        }
+        return ResponseEntity.ok(service.delete(principal, id));
+    }
+
 }

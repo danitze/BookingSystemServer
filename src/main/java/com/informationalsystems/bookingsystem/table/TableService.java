@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.util.NoSuchElementException;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +34,33 @@ public class TableService {
         restaurant.getTables().add(table);
         tableRepository.save(table);
         return RestaurantTable.toSavedRestaurantTableDto(table);
+    }
+
+    public SavedRestaurantTableDto update(Principal principal, Long id, RestaurantTableDto dto) {
+        Restaurant restaurant = userRepository
+                .findByPhoneNumber(principal.getName())
+                .map(User::getRestaurant)
+                .orElseThrow();
+        RestaurantTable table = tableRepository.findById(id).orElseThrow();
+        if (!restaurant.getTables().contains(table)) {
+            throw new NoSuchElementException();
+        }
+        table.setSeats(dto.getSeats());
+        table.setPosition(dto.getPosition());
+        table.setDescription(dto.getDescription());
+        return RestaurantTable.toSavedRestaurantTableDto(table);
+    }
+
+    public String delete(Principal principal, Long id) {
+        Restaurant restaurant = userRepository
+                .findByPhoneNumber(principal.getName())
+                .map(User::getRestaurant)
+                .orElseThrow();
+        if (restaurant.getTables().stream().noneMatch(t -> Objects.equals(t.getId(), id))) {
+            throw new NoSuchElementException();
+        }
+        tableRepository.deleteById(id);
+        return "Ok";
     }
 
 }

@@ -5,10 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
@@ -20,7 +17,7 @@ public class TableController {
 
     private final TableService service;
 
-    @PostMapping("/add")
+    @PostMapping
     public ResponseEntity<?> addTable(
             Principal principal,
             Authentication authentication,
@@ -30,6 +27,31 @@ public class TableController {
             throw new AccessDeniedException("Need to be restaurant");
         }
         return ResponseEntity.ok(service.addTable(principal, dto));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(
+            Authentication authentication,
+            Principal principal,
+            @PathVariable("id") Long id,
+            @RequestBody RestaurantTableDto dto
+    ) {
+        if (!AuthenticationUtil.isRestaurant(authentication)) {
+            throw new AccessDeniedException("Need to be restaurant");
+        }
+        return ResponseEntity.ok(service.update(principal, id, dto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(
+            Authentication authentication,
+            Principal principal,
+            @PathVariable("id") Long id
+    ) {
+        if (!AuthenticationUtil.isRestaurant(authentication)) {
+            throw new AccessDeniedException("Need to be restaurant");
+        }
+        return ResponseEntity.ok(service.delete(principal, id));
     }
 
 }

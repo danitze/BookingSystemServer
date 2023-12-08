@@ -28,6 +28,23 @@ public class ReservationController {
         return ResponseEntity.ok(service.create(principal, dto));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(
+            Principal principal,
+            @PathVariable("id") Long id,
+            @RequestBody ReservationDto dto
+    ) {
+        return ResponseEntity.ok(service.update(principal, id, dto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(
+            Principal principal,
+            @PathVariable("id") Long id
+    ) {
+        return ResponseEntity.ok(service.delete(principal, id));
+    }
+
     @GetMapping
     public ResponseEntity<?> getAll(Principal principal) {
         return ResponseEntity.ok(service.getAll(principal));
