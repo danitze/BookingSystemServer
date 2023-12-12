@@ -53,7 +53,12 @@ public class RestaurantService {
 
     public List<SavedRestaurantDto> getRestaurants() {
         List<Restaurant> restaurants = restaurantRepository.findAll();
+        System.out.println("MyTag restaurants got!!!");
         return mapToSavedRestaurantDtos(restaurants);
+    }
+
+    public SavedRestaurantDto read(Long id) {
+        return restaurantRepository.findById(id).map(Restaurant::toSavedRestaurantDto).orElseThrow();
     }
 
     private List<SavedRestaurantTableDto> mapToSavedRestaurantTableDtos(Set<RestaurantTable> tables) {

@@ -13,6 +13,7 @@ import java.security.Principal;
 import java.util.List;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api/v1/restaurant")
 @RequiredArgsConstructor
 public class RestaurantController {
@@ -48,6 +49,13 @@ public class RestaurantController {
     @GetMapping("/list")
     public ResponseEntity<List<SavedRestaurantDto>> getRestaurants() {
         return ResponseEntity.ok(service.getRestaurants());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> read(
+            @PathVariable("id") Long id
+    ) {
+        return ResponseEntity.ok(service.read(id));
     }
 
 }

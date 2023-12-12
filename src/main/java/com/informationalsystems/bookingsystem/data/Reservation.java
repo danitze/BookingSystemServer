@@ -47,8 +47,8 @@ public class Reservation {
     private RestaurantTable table;
 
     @EqualsAndHashCode.Exclude
-    @ManyToMany(cascade = CascadeType.ALL)
-    private Set<Dish> dishes = new HashSet<>();
+    @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL)
+    private Set<ReservationDish> reservationDishes = new HashSet<>();
 
     public static SavedReservationDto toSavedReservationDto(Reservation reservation) {
         return SavedReservationDto.builder()
@@ -59,7 +59,7 @@ public class Reservation {
                 .customer(Customer.toSavedCustomerDto(reservation.getCustomer()))
                 .restaurant(Restaurant.toSavedRestaurantDto(reservation.getRestaurant()))
                 .table(RestaurantTable.toSavedRestaurantTableDto(reservation.getTable()))
-                .dishes(reservation.getDishes().stream().map(Dish::toSavedDishDto).toList())
+                .dishes(reservation.getReservationDishes().stream().map(ReservationDish::toSavedDishWithCountDto).toList())
                 .build();
     }
 }

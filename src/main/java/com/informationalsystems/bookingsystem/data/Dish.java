@@ -31,8 +31,8 @@ public class Dish {
     private Restaurant restaurant;
 
     @EqualsAndHashCode.Exclude
-    @ManyToMany
-    private Set<Reservation> reservations = new HashSet<>();
+    @OneToMany(mappedBy = "dish", cascade = CascadeType.ALL)
+    private Set<ReservationDish> reservationDishes = new HashSet<>();
 
     public static SavedDishDto toSavedDishDto(Dish dish) {
         return SavedDishDto.builder()

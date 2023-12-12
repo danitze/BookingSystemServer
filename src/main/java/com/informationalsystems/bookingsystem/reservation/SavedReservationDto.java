@@ -1,7 +1,7 @@
 package com.informationalsystems.bookingsystem.reservation;
 
 import com.informationalsystems.bookingsystem.customer.SavedCustomerDto;
-import com.informationalsystems.bookingsystem.dish.SavedDishDto;
+import com.informationalsystems.bookingsystem.dish.SavedDishWithCountDto;
 import com.informationalsystems.bookingsystem.restaurant.SavedRestaurantDto;
 import com.informationalsystems.bookingsystem.table.SavedRestaurantTableDto;
 import lombok.AllArgsConstructor;
@@ -30,6 +30,6 @@ public class SavedReservationDto {
 
     private SavedRestaurantTableDto table;
 
-    private List<SavedDishDto> dishes;
+    private List<SavedDishWithCountDto> dishes;
 
 }

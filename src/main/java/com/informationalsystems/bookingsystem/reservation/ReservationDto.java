@@ -1,5 +1,6 @@
 package com.informationalsystems.bookingsystem.reservation;
 
+import com.informationalsystems.bookingsystem.dish.DishWithCountDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
@@ -26,6 +27,6 @@ public class ReservationDto {
     @NonNull
     private Long tableId;
 
-    private List<Long> dishIds;
+    private List<DishWithCountDto> dishesWithCount;
 
 }

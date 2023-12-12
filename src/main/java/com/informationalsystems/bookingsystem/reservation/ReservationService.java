@@ -28,9 +28,6 @@ public class ReservationService {
         Customer customer = userRepository.findByPhoneNumber(principal.getName()).map(User::getCustomer).orElseThrow();
         Restaurant restaurant = restaurantRepository.findById(dto.getRestaurantId()).orElseThrow();
         RestaurantTable table = tableRepository.findById(dto.getTableId()).orElseThrow();
-        Set<Dish> dishes = Optional.ofNullable(dto.getDishIds()).orElse(List.of()).stream()
-                .map(id -> dishRepository.findById(id).orElseThrow())
-                .collect(Collectors.toSet());
         Reservation reservation = Reservation.builder()
                 .startTime(dto.getStartTime())
                 .endTime(dto.getEndTime())
@@ -38,40 +35,48 @@ public class ReservationService {
                 .customer(customer)
                 .restaurant(restaurant)
                 .table(table)
-                .dishes(dishes)
                 .build();
+        Set<ReservationDish> reservationDishes = Optional.ofNullable(dto.getDishesWithCount()).orElse(List.of())
+                .stream()
+                .map(dishWithCount -> ReservationDish.builder()
+                        .dish(dishRepository.findById(dishWithCount.getDishId()).orElseThrow())
+                        .reservation(reservation)
+                        .count(dishWithCount.getCount())
+                        .build())
+                .collect(Collectors.toSet());
+        reservation.setReservationDishes(reservationDishes);
+        reservationDishes.forEach(reservationDish -> reservationDish.getDish().getReservationDishes().add(reservationDish));
         customer.getReservations().add(reservation);
         restaurant.getReservations().add(reservation);
         table.getReservations().add(reservation);
-        dishes.forEach(dish -> dish.getReservations().add(reservation));
         reservationRepository.save(reservation);
         return Reservation.toSavedReservationDto(reservation);
     }
 
-    @Transactional
-    public SavedReservationDto update(Principal principal, Long reservationId, ReservationDto dto) {
-        Customer customer = userRepository.findByPhoneNumber(principal.getName()).map(User::getCustomer).orElseThrow();
-        Restaurant restaurant = restaurantRepository.findById(dto.getRestaurantId()).orElseThrow();
-        RestaurantTable table = tableRepository.findById(dto.getTableId()).orElseThrow();
-        Set<Dish> dishes = Optional.ofNullable(dto.getDishIds()).orElse(List.of()).stream()
-                .map(id -> dishRepository.findById(id).orElseThrow())
-                .collect(Collectors.toSet());
-        Reservation reservation = reservationRepository.findById(reservationId).orElseThrow();
-        customer.getReservations().remove(reservation);
-        restaurant.getReservations().remove(reservation);
-        dishes.forEach(dish -> dish.getReservations().remove(reservation));
-        reservation.setStartTime(dto.getStartTime());
-        reservation.setEndTime(dto.getEndTime());
-        reservation.setCustomersAmount(dto.getCustomersAmount());
-        reservation.setCustomer(customer);
-        reservation.setRestaurant(restaurant);
-        reservation.setTable(table);
-        reservation.setDishes(dishes);
-        customer.getReservations().add(reservation);
-        restaurant.getReservations().add(reservation);
-        dishes.forEach(dish -> dish.getReservations().add(reservation));
-        return Reservation.toSavedReservationDto(reservation);
-    }
+//    @Transactional
+//    public SavedReservationDto update(Principal principal, Long reservationId, ReservationDto dto) {
+//        Customer customer = userRepository.findByPhoneNumber(principal.getName()).map(User::getCustomer).orElseThrow();
+//        Restaurant restaurant = restaurantRepository.findById(dto.getRestaurantId()).orElseThrow();
+//        RestaurantTable table = tableRepository.findById(dto.getTableId()).orElseThrow();
+//        Set<Dish> dishes = Optional.ofNullable(dto.getDishIds()).orElse(List.of()).stream()
+//                .map(id -> dishRepository.findById(id).orElseThrow())
+//                .collect(Collectors.toSet());
+//        Reservation reservation = reservationRepository.findById(reservationId).orElseThrow();
+//        customer.getReservations().remove(reservation);
+//        restaurant.getReservations().remove(reservation);
+//        dishes.forEach(dish -> dish.getReservations().remove(reservation));
+//        reservation.setStartTime(dto.getStartTime());
+//        reservation.setEndTime(dto.getEndTime());
+//        reservation.setCustomersAmount(dto.getCustomersAmount());
+//        reservation.setCustomer(customer);
+//        reservation.setRestaurant(restaurant);
+//        reservation.setTable(table);
+//        reservation.setDishes(dishes);
+//        customer.getReservations().add(reservation);
+//        restaurant.getReservations().add(reservation);
+//        dishes.forEach(dish -> dish.getReservations().add(reservation));
+//        return Reservation.toSavedReservationDto(reservation);
+//    }
 
     @Transactional
     public String delete(Principal principal, Long reservationId) {
