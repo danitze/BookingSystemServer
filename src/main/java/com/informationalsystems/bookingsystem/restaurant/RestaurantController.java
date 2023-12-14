@@ -58,4 +58,15 @@ public class RestaurantController {
         return ResponseEntity.ok(service.read(id));
     }
 
+    @GetMapping("/tables-with-incomes")
+    public ResponseEntity<?> getTablesWithIncomes(
+            Authentication authentication,
+            Principal principal
+    ) {
+        if (!AuthenticationUtil.isRestaurant(authentication)) {
+            throw new AccessDeniedException("Need to be restaurant");
+        }
+        return ResponseEntity.ok(service.getTablesWithIncomes(principal));
+    }
+
 }

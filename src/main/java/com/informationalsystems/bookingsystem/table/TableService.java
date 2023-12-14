@@ -5,6 +5,7 @@ import com.informationalsystems.bookingsystem.data.RestaurantTable;
 import com.informationalsystems.bookingsystem.data.User;
 import com.informationalsystems.bookingsystem.repository.TableRepository;
 import com.informationalsystems.bookingsystem.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ public class TableService {
 
     private final TableRepository tableRepository;
 
+    @Transactional
     public SavedRestaurantTableDto addTable(Principal principal, RestaurantTableDto dto) {
         Restaurant restaurant = userRepository
                 .findByPhoneNumber(principal.getName())
@@ -36,6 +38,7 @@ public class TableService {
         return RestaurantTable.toSavedRestaurantTableDto(table);
     }
 
+    @Transactional
     public SavedRestaurantTableDto update(Principal principal, Long id, RestaurantTableDto dto) {
         Restaurant restaurant = userRepository
                 .findByPhoneNumber(principal.getName())
@@ -51,6 +54,7 @@ public class TableService {
         return RestaurantTable.toSavedRestaurantTableDto(table);
     }
 
+    @Transactional
     public String delete(Principal principal, Long id) {
         Restaurant restaurant = userRepository
                 .findByPhoneNumber(principal.getName())
@@ -59,8 +63,12 @@ public class TableService {
         if (restaurant.getTables().stream().noneMatch(t -> Objects.equals(t.getId(), id))) {
             throw new NoSuchElementException();
         }
-        tableRepository.deleteById(id);
+        tableRepository.deleteByPid(id);
         return "Ok";
+    }
+
+    public SavedRestaurantTableDto read(Long id) {
+        return tableRepository.findById(id).map(RestaurantTable::toSavedRestaurantTableDto).orElseThrow();
     }
 
 }

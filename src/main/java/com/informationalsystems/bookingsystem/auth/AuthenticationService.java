@@ -35,6 +35,9 @@ public class AuthenticationService {
 
     @Transactional
     public AuthenticationResponse registerCustomer(CustomerRegisterRequest request) {
+        if (userRepository.findByPhoneNumber(request.getPhoneNumber()).isPresent()) {
+            throw new IllegalStateException("User already exists");
+        }
         User user = User.builder()
                 .phoneNumber(request.getPhoneNumber())
                 .password(passwordEncoder.encode(request.getPassword()))
@@ -54,6 +57,9 @@ public class AuthenticationService {
 
     @Transactional
     public AuthenticationResponse registerRestaurant(RestaurantRegisterRequest request) {
+        if (userRepository.findByPhoneNumber(request.getPhoneNumber()).isPresent()) {
+            throw new IllegalStateException("User already exists");
+        }
         User user = User.builder()
                 .phoneNumber(request.getPhoneNumber())
                 .password(passwordEncoder.encode(request.getPassword()))

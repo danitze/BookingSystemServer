@@ -7,10 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,6 +25,16 @@ public class ReservationService {
         Customer customer = userRepository.findByPhoneNumber(principal.getName()).map(User::getCustomer).orElseThrow();
         Restaurant restaurant = restaurantRepository.findById(dto.getRestaurantId()).orElseThrow();
         RestaurantTable table = tableRepository.findById(dto.getTableId()).orElseThrow();
+        if (dto.getCustomersAmount() > table.getSeats()) {
+            throw new IllegalStateException("Customers amount more than seats");
+        }
+        table.getReservations().forEach(reservation -> {
+            Date startTime = reservation.getStartTime();
+            Date endTime = reservation.getEndTime();
+            if ((dto.getStartTime().after(startTime) && dto.getStartTime().before(endTime)) || (dto.getEndTime().after(startTime) && dto.getEndTime().before(endTime))) {
+                throw new IllegalStateException("Time is already booked");
+            }
+        });
         Reservation reservation = Reservation.builder()
                 .startTime(dto.getStartTime())
                 .endTime(dto.getEndTime())
@@ -53,30 +60,34 @@ public class ReservationService {
         return Reservation.toSavedReservationDto(reservation);
     }
 
-//    @Transactional
-//    public SavedReservationDto update(Principal principal, Long reservationId, ReservationDto dto) {
-//        Customer customer = userRepository.findByPhoneNumber(principal.getName()).map(User::getCustomer).orElseThrow();
-//        Restaurant restaurant = restaurantRepository.findById(dto.getRestaurantId()).orElseThrow();
-//        RestaurantTable table = tableRepository.findById(dto.getTableId()).orElseThrow();
-//        Set<Dish> dishes = Optional.ofNullable(dto.getDishIds()).orElse(List.of()).stream()
-//                .map(id -> dishRepository.findById(id).orElseThrow())
-//                .collect(Collectors.toSet());
-//        Reservation reservation = reservationRepository.findById(reservationId).orElseThrow();
-//        customer.getReservations().remove(reservation);
-//        restaurant.getReservations().remove(reservation);
-//        dishes.forEach(dish -> dish.getReservations().remove(reservation));
-//        reservation.setStartTime(dto.getStartTime());
-//        reservation.setEndTime(dto.getEndTime());
-//        reservation.setCustomersAmount(dto.getCustomersAmount());
-//        reservation.setCustomer(customer);
-//        reservation.setRestaurant(restaurant);
-//        reservation.setTable(table);
-//        reservation.setDishes(dishes);
-//        customer.getReservations().add(reservation);
-//        restaurant.getReservations().add(reservation);
-//        dishes.forEach(dish -> dish.getReservations().add(reservation));
-//        return Reservation.toSavedReservationDto(reservation);
-//    }
+    @Transactional
+    public SavedReservationDto update(Principal principal, Long reservationId, ReservationDto dto) {
+        Customer customer = userRepository.findByPhoneNumber(principal.getName()).map(User::getCustomer).orElseThrow();
+        Restaurant restaurant = restaurantRepository.findById(dto.getRestaurantId()).orElseThrow();
+        RestaurantTable table = tableRepository.findById(dto.getTableId()).orElseThrow();
+        if (dto.getCustomersAmount() > table.getSeats()) {
+            throw new IllegalStateException("Customers amount more than seats");
+        }
+        table.getReservations().forEach(reservation -> {
+            Date startTime = reservation.getStartTime();
+            Date endTime = reservation.getEndTime();
+            if ((dto.getStartTime().after(startTime) && dto.getStartTime().before(endTime)) || (dto.getEndTime().after(startTime) && dto.getEndTime().before(endTime))) {
+                throw new IllegalStateException("Time is already booked");
+            }
+        });
+        Reservation reservation = reservationRepository.findById(reservationId).orElseThrow();
+        customer.getReservations().remove(reservation);
+        restaurant.getReservations().remove(reservation);
+        reservation.setStartTime(dto.getStartTime());
+        reservation.setEndTime(dto.getEndTime());
+        reservation.setCustomersAmount(dto.getCustomersAmount());
+        reservation.setCustomer(customer);
+        reservation.setRestaurant(restaurant);
+        reservation.setTable(table);
+        customer.getReservations().add(reservation);
+        restaurant.getReservations().add(reservation);
+        return Reservation.toSavedReservationDto(reservation);
+    }
 
     @Transactional
     public String delete(Principal principal, Long reservationId) {
@@ -89,7 +100,7 @@ public class ReservationService {
         if (!isReservationPresent) {
             throw new NoSuchElementException();
         }
-        reservationRepository.deleteById(reservationId);
+        reservationRepository.deleteByPid(reservationId);
         return "Ok";
     }
 

@@ -1,9 +1,6 @@
 package com.informationalsystems.bookingsystem.restaurant;
 
-import com.informationalsystems.bookingsystem.data.Dish;
-import com.informationalsystems.bookingsystem.data.Restaurant;
-import com.informationalsystems.bookingsystem.data.RestaurantTable;
-import com.informationalsystems.bookingsystem.data.User;
+import com.informationalsystems.bookingsystem.data.*;
 import com.informationalsystems.bookingsystem.dish.SavedDishDto;
 import com.informationalsystems.bookingsystem.repository.RestaurantRepository;
 import com.informationalsystems.bookingsystem.repository.UserRepository;
@@ -15,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.security.Principal;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -59,6 +57,23 @@ public class RestaurantService {
 
     public SavedRestaurantDto read(Long id) {
         return restaurantRepository.findById(id).map(Restaurant::toSavedRestaurantDto).orElseThrow();
+    }
+
+    public List<TableWithIncomeDto> getTablesWithIncomes(Principal principal) {
+        Restaurant restaurant = userRepository.findByPhoneNumber(principal.getName()).map(User::getRestaurant).orElseThrow();
+        return restaurant.getTables().stream().map(table -> {
+            Long income = table.getReservations().stream()
+                    .map(Reservation::getReservationDishes)
+                    .map(reservationDishes ->
+                            reservationDishes.stream()
+                                    .map(reservationDish -> reservationDish.getCount() * reservationDish.getDish().getPrice())
+                                    .reduce(0L, Long::sum))
+                    .reduce(0L, Long::sum);
+            return TableWithIncomeDto.builder()
+                    .dto(RestaurantTable.toSavedRestaurantTableDto(table))
+                    .income(income)
+                    .build();
+        }).collect(Collectors.toList());
     }
 
     private List<SavedRestaurantTableDto> mapToSavedRestaurantTableDtos(Set<RestaurantTable> tables) {

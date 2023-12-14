@@ -36,6 +36,10 @@ public class DishService {
         return Dish.toSavedDishDto(dish);
     }
 
+    public SavedDishDto read(Long id) {
+        return dishRepository.findById(id).map(Dish::toSavedDishDto).orElseThrow();
+    }
+
     @Transactional
     public SavedDishDto update(Principal principal, Long id, DishDto dto) {
         Restaurant restaurant = userRepository.findByPhoneNumber(principal.getName())
@@ -55,7 +59,7 @@ public class DishService {
         if (restaurant.getDishes().stream().noneMatch(d -> Objects.equals(d.getId(), id))) {
             throw new NoSuchElementException();
         }
-        dishRepository.deleteById(id);
+        dishRepository.deleteByPid(id);
         return "Ok";
     }
 

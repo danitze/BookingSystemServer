@@ -28,6 +28,13 @@ public class DishController {
         return ResponseEntity.ok(service.create(principal, dto));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> read(
+            @PathVariable("id") Long id
+    ) {
+        return ResponseEntity.ok(service.read(id));
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<?> update(
             Authentication authentication,

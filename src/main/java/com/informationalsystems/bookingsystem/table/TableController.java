@@ -54,4 +54,11 @@ public class TableController {
         return ResponseEntity.ok(service.delete(principal, id));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> read(
+            @PathVariable("id") Long id
+    ) {
+        return ResponseEntity.ok(service.read(id));
+    }
+
 }
